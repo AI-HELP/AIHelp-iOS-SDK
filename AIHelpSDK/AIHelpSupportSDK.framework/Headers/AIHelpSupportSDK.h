@@ -9,126 +9,56 @@
 #import <AIHelpSupportSDK/AIHelpSDKConfig.h>
 #import <UIKit/UIKit.h>
 
-typedef void (*AISupportInitCallBack)(void);
-typedef void (*AISupportMessageCallBack)(const int unreadCount);
-typedef void (*AISupportPingCallBack)(const char * log);
-typedef void (*AISupportIsSpecificFormCallBack)(void);
-typedef void (*AISupportOpenSDKCallBack)(void);
-typedef void (*AISupportCloseSDKCallBack)(void);
-typedef void (*AISupportOperationUnReadCallBack)(const bool hasUnreadArticles);
-typedef void (*AISupportSpecificUrlClickedCallBack)(const char * url);
-
 @interface AIHelpSupportSDK : NSObject
 
 /**
  * Initialize AIHelp sdk
  *
  * When initializing AIHelp you must pass these three tokens. You initialize AIHelp by adding the following lines in the implementation file for your app delegate, ideally at the top of application:didFinishLaunchingWithOptions
- * @param apiKey This is your developer API Key
  * @param domainName This is your domain name without any http:// or forward slashes
  * @param appId  This is the unique ID assigned to your app
  */
-+ (void)initWithApiKey:(NSString *)apiKey domainName:(NSString *)domainName appId:(NSString *)appId;
++ (void)initializeWithDomainName:(NSString *)domainName appId:(NSString *)appId;
 
 /**
  * Initialize AIHelp sdk
  *
  * When initializing AIHelp you must pass these three tokens. You initialize AIHelp by adding the following lines in the implementation file for your app delegate, ideally at the top of application:didFinishLaunchingWithOptions
- * @param apiKey This is your developer API Key
  * @param domainName This is your domain name without any http:// or forward slashes
  * @param appId  This is the unique ID assigned to your app
  * @param language  This is your expected init language
  */
-+ (void)initWithApiKey:(NSString *)apiKey domainName:(NSString *)domainName appId:(NSString *)appId language:(NSString *)language;
++ (void)initializeWithDomainName:(NSString *)domainName appId:(NSString *)appId language:(NSString *)language;
 
 /**
- * Show the AIHelp conversation screen, which is Elva bot by default.
- *
- * If you want to change your conversation intent or custom your welcome message, please check next method  for more information.
+ * Logs in a user using their user ID.
+ * * @param userId the unique identifier of the user to log in
  */
-+ (void)showConversation;
++ (void)loginWithUserId:(NSString *)userId;
 
 /**
- * Show the AIHelp conversation screen, with Optional Arguments.
+ * Logs in a user using a LoginConfig object.
+ * <p>
+ * Checkout {@link LoginConfig} for more information.
  *
- * User CAN NOT get in touch with customer service in Bot page, unless there is an unfinished ticket or they submit a form from elva bot.
- * However, You could configure your default conversation intent with AIHelpConversationConfig.
- * For instance, You can show different welcome msg for different customer, make your customer service always online for your VIPs, even skipping BOT conversation and show customer service by default for them.
- * check AIHelpConversationConfig for more information.
- * @param conversationConfig configure different conversation actions
+ * @param config the configuration object containing login details.
+ * @see LoginConfig
  */
-+ (void)showConversation:(AIHelpConversationConfig *)conversationConfig;
++ (void)login:(AIHelpLoginConfig *)config;
 
 /**
- * Show the AIHelp screen with only the faqs, which is root section by default.
+ * Show the AIHelp conversation screen.
  *
- * To show the AIHelp screen with only the faq sections with search with optional arguments, you can use this api.
- * If you want to pass some options to configure your faqs display, check next method  for more information.
+ * If you want to custom your welcome message, please check next method for more information.
  */
-+ (void)showAllFAQSections;
++ (BOOL)showWithEntranceId:(NSString *)entranceId;
 
 /**
- * Show the AIHelp screen with only the faqs, with Optional Arguments.
- *
- * User can get in touch with your customer service via FAQs, you can configure this with ECServiceFAQConfig, Such as the EXACT moment user can see the CONTACT US button.
- * Besides, as you can get conversation via FAQs, you can configure your conversation configs wiith AIHelpConversationConfig.
- * @param config the configs which contains custom configurations for faqs & supports
+ Show the AIHelp conversation screen.
  */
-+ (void)showAllFAQSections:(AIHelpFAQConfig *)config;
++ (BOOL)showWithApiConfig:(AIHelpApiConfig *)apiConfig;
 
-/**
- * Show the AIHelp screen with faqs from a particular section.
- *
- * This api takes on the default options, if you want to pass some options to configure your faqs display, check next method  for more information.
- * @param sectionId the publish id associated with the faq section which is shown in the FAQ page on the admin side.(https://aihelp.net/dashboard/#/FAQ)
- */
-+ (void)showFAQSection:(NSString *)sectionId;
-
-/**
- * Show the AIHelp screen with faqs from a particular section, with Optional Arguments.
- *
- * User can get in touch with your customer service via FAQs, you can configure this with ECServiceFAQConfig,Such as the EXACT moment user can see the CONTACT US button.
- * Besides, as you can get conversation via FAQs, you can configure your conversation configs wiith AIHelpConversationConfig.
- *
- * @param sectionId the publish id associated with the faq section which is shown in the FAQ page on the admin side.(https://aihelp.net/dashboard/#/FAQ)
- * @param config the configs which contains custom configurations for faqs & supports
- */
-+ (void)showFAQSection:(NSString *)sectionId config:(AIHelpFAQConfig *)config;
-
-/**
- * Show the AIHelp screen with a single faq.
- *
- * This api takes on the default options, if you want to pass some options to configure your faq display, check next method for more information.
- * @param faqId    the publish id associated with the faq which is shown when you expand a single FAQ.(https://aihelp.net/dashboard/#/FAQ)
- */
-+ (void)showSingleFAQ:(NSString *)faqId;
-
-/**
- * Show the AIHelp screen with a single faq, with Optional Arguments.
- *
- * User can get in touch with your customer service via FAQs, you can configure this with ECServiceFAQConfig.
- * Such as the EXACT moment user can see the CONTACT US button, Besides, as you can get conversation via FAQs, you can configure your conversation configs wiith AIHelpConversationConfig.
- * @param faqId     the publish id associated with the faq which is shown when you expand a single FAQ.(https://aihelp.net/dashboard/#/FAQ)
- * @param config   the configs which contains custom configurations for faqs & supports
- */
-+ (void)showSingleFAQ:(NSString *)faqId config:(AIHelpFAQConfig *)config;
-
-/**
- * Show the AIHelp operation screen.
- *
- * This api takes on the default options, which selects Elva Bot by default.
- * If you want to change the operation default selection or elva bot title, please check next method for more information.
- */
-+ (void)showOperation;
-
-/**
- * Show the AIHelp operation screen, with Optional Arguments.
- *
- * You can change your default selection or elva bot title by passing in ECServiceOperationConfig.
- * Besides, as you can get conversation via FAQs, you can configure your conversation configs wiith AIHelpConversationConfig.
- * @param config the configs which contains custom configurations for operations & supports
- */
-+ (void)showOperation:(AIHelpOperationConfig *)config;
++ (void)showSingleFAQ:(NSString *)faqId showConversationMoment:(AIHelpFAQShowConversationMoment)showConversationMoment;
 
 /**
  * Update a user's profile via UserConfig.
@@ -195,51 +125,21 @@ typedef void (*AISupportSpecificUrlClickedCallBack)(const char * url);
 + (void)enableLogging:(BOOL)enable;
 
 /**
- * The preferred screen orientation sdk would like to run in.
+ * Unregisters an event listener for a specific event type.
  *
- * NOTE: The SDK direction must be included in the program direction Settings, otherwise the setting will fail
- * @param interfaceOrientationMask please refer to the UIInterfaceOrientationMask API
+ * @param eventType The type of event to stop listening for.
  */
-+ (void)setSDKInterfaceOrientationMask:(UIInterfaceOrientationMask)interfaceOrientationMask;
++ (void)registerAsyncListener:(AISupportAsyncEventListener)asyncEventListener
+                    eventType:(AIHelpEventType)eventType;
+
++ (void)unregisterAsyncListenerWithEvent:(AIHelpEventType)eventType;
 
 /**
- * Set up host address for network check with result callback.
- *
- * With this api, you can get the network check result passing back to you.
- * @param address host address for network checking, without schemes such 'https://' or 'http://'.
- *                    For example, you can pass in 'www.google.com' or just 'google.com', no schemes are needed.
- * @param callback    network check result callback, you can get the check result via this callback
+ * Fetch unread message count proactively
  */
-+ (void)setNetworkCheckHostAddress:(NSString*)address callback:(AISupportPingCallBack)callback;
++ (void)fetchUnreadMessageCount;
 
-/**
- * Register callback for the process of AIHelp's initialization.
- *
- * After you register this callback, SDK will let you know if the init work is done.
- * You can call this method either before or after the init method.
- * @param callback callback for AIHelp initialization
- */
-+ (void)setOnInitializedCallback:(AISupportInitCallBack)callback;
-
-/**
- * start in-app unread message count polling
- *
- * This is a schedule work, get unread message count every five minutes.
- * If you want to stop a started polling, just pass null to the listener parameters.
- * @param callback callback for unread message polling
- */
-+ (void)startUnreadMessageCountPolling:(AISupportMessageCallBack)callback;
-
-/**
- * Set the SDK display mode
- *
- * Default following system
- * @param mode
-            0: follow the system
-            1: light mode
-            2: dark mode
- */
-+ (void)setSDKAppearanceMode:(int)mode;
++ (void)fetchUnreadTaskCount;
 
 /**
  * AIHelp provide additional support for some country or regions.
@@ -252,19 +152,8 @@ typedef void (*AISupportSpecificUrlClickedCallBack)(const char * url);
 
 + (void)setKeyWindow:(UIWindow *)keyWin;
 
-+ (void)setOnAIHelpSessionOpenCallback:(AISupportOpenSDKCallBack)callback;
++ (void)close;
 
-+ (void)setOnAIHelpSessionCloseCallback:(AISupportCloseSDKCallBack)callback;
-
-+ (void)setOnSpecificFormSubmittedCallback:(AISupportIsSpecificFormCallBack)callBack;
-
-+ (void)setOnOperationUnreadChangedCallback:(AISupportOperationUnReadCallBack)callback;
-
-+ (void)setOnSpecificUrlClickedCallback:(AISupportSpecificUrlClickedCallBack)callback;
-
-+ (void)setSDKEdgeInsetsWithTop:(float)top bottom:(float)bottom enable:(BOOL)enable;
-+ (void)setSDKEdgeColorWithRed:(float)red green:(float)green blue:(float)blue alpha:(float)alpha;
-
-+ (void)uninstall;
++ (void)logout;
 
 @end
